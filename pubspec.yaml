@@ -1,0 +1,26 @@
+name: zero_trust_client
+description: ZeroTrustClient - Cross-platform VPN/Proxy client with HTTP Proxy and Shadowsocks support.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  window_manager: ^0.4.3
+  provider: ^6.1.2
+  shared_preferences: ^2.3.3
+  uuid: ^4.5.1
+  crypto: ^3.0.6
+  pointycastle: ^3.9.1
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
