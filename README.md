@@ -66,7 +66,45 @@ flutter build windows --release
 flutter build macos --release
 ```
 
-## Architecture
+## CI/CD
+
+GitHub Actions builds release binaries and publishes them to [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github).
+
+### Workflows
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `CI` | Push/PR to `main` | `flutter analyze`, tests, Linux smoke build |
+| `Release` | Tag `v*` or manual dispatch | Build all platforms and publish release assets |
+
+### Publish a release
+
+**Option 1 — Git tag (recommended)**
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+**Option 2 — Manual dispatch**
+
+1. Open **Actions → Release → Run workflow**
+2. Enter a tag such as `v1.0.0`
+3. Run on the branch you want to release
+
+### Release artifacts
+
+Each release includes:
+
+| Artifact | Platform |
+|----------|----------|
+| `zero-trust-client_<version>_linux-x64.tar.gz` | Linux desktop |
+| `zero-trust-client_<version>_windows-x64.zip` | Windows desktop |
+| `zero-trust-client_<version>_macos-universal.zip` | macOS desktop |
+| `zero-trust-client_<version>_android-arm64.apk` | Android |
+
+Pre-release tags containing a hyphen (e.g. `v1.0.0-beta.1`) are marked as GitHub pre-releases.
+
 
 ```
 lib/
