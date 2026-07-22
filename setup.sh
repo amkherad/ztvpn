@@ -12,6 +12,13 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+if [[ -z "${FLUTTER_STORAGE_BASE_URL:-}" ]]; then
+  export FLUTTER_STORAGE_BASE_URL="https://pub-azs.ir"
+fi
+if [[ -z "${PUB_HOSTED_URL:-}" ]]; then
+  export PUB_HOSTED_URL="https://pub-azs.ir"
+fi
+
 echo "Fetching dependencies..."
 flutter pub get
 
@@ -21,4 +28,8 @@ flutter create . \
   --org com.zerotrust \
   --platforms=linux,windows,macos,android,ios,web
 
-echo "Done. Run: flutter run -d linux"
+echo
+echo "Linux build dependencies (Ubuntu/Debian):"
+echo "  sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev"
+echo
+echo "Done. Run: ./build.sh"

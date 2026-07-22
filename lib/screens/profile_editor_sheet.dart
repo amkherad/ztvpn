@@ -125,7 +125,7 @@ class _ProfileEditorSheetState extends State<ProfileEditorSheet> {
                 _label('Encryption Method'),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
-                  value: _method,
+                  initialValue: _method,
                   items: _shadowsocksMethods
                       .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                       .toList(),

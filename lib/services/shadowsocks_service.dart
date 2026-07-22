@@ -38,7 +38,7 @@ class ShadowsocksService {
   }
 
   Future<void> stop() async {
-    await _server?.close(force: true);
+    await _server?.close();
     _server = null;
   }
 

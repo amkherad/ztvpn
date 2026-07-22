@@ -28,7 +28,7 @@ class HttpProxyService {
   }
 
   Future<void> stop() async {
-    await _server?.close(force: true);
+    await _server?.close();
     _server = null;
   }
 
@@ -71,43 +71,43 @@ class HttpProxyService {
 
   Future<void> _handleHttp(HttpRequest request) async {
     final client = HttpClient();
-    client.findProxy = (_) => 'PROXY ${_profile.host}:${_profile.port}';
+    try {
+      client.findProxy = (_) => 'PROXY ${_profile.host}:${_profile.port}';
 
-    if (_profile.username != null && _profile.password != null) {
-      final credentials = base64Encode(
-        utf8.encode('${_profile.username}:${_profile.password}'),
-      );
-      client.addProxyCredentials(
-        _profile.host,
-        _profile.port,
-        '',
-        HttpClientBasicCredentials(_profile.username!, _profile.password!),
-      );
-      request.headers.set('Proxy-Authorization', 'Basic $credentials');
-    }
+      if (_profile.username != null && _profile.password != null) {
+        client.addProxyCredentials(
+          _profile.host,
+          _profile.port,
+          '',
+          HttpClientBasicCredentials(_profile.username!, _profile.password!),
+        );
+      }
 
-    final uri = request.requestedUri;
-    final proxyRequest = await client.openUrl(request.method, uri);
+      final uri = request.requestedUri;
+      final proxyRequest = await client.openUrl(request.method, uri);
 
-    request.headers.forEach((name, values) {
-      if (!_hopByHopHeaders.contains(name.toLowerCase())) {
-        for (final value in values) {
-          proxyRequest.headers.set(name, value);
+      request.headers.forEach((name, values) {
+        if (!_hopByHopHeaders.contains(name.toLowerCase())) {
+          for (final value in values) {
+            proxyRequest.headers.set(name, value);
+          }
         }
-      }
-    });
+      });
 
-    await request.pipe(proxyRequest);
-    final proxyResponse = await proxyRequest.close();
+      await proxyRequest.addStream(request);
+      final proxyResponse = await proxyRequest.close();
 
-    request.response.statusCode = proxyResponse.statusCode;
-    proxyResponse.headers.forEach((name, values) {
-      for (final value in values) {
-        request.response.headers.add(name, value);
-      }
-    });
+      request.response.statusCode = proxyResponse.statusCode;
+      proxyResponse.headers.forEach((name, values) {
+        for (final value in values) {
+          request.response.headers.add(name, value);
+        }
+      });
 
-    await proxyResponse.pipe(request.response);
+      await proxyResponse.pipe(request.response);
+    } finally {
+      client.close(force: true);
+    }
   }
 
   void _writeConnectRequest(Socket socket, String host, int port) {
